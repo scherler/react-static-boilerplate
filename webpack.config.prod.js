@@ -4,19 +4,19 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var axis = require('axis');
 var rupture = require('rupture');
-var StaticSitePlugin = require('react-static-webpack-plugin');
+var ReactStaticPlugin = require('react-static-webpack-plugin');
+var autoprefixer = require('autoprefixer');
 
 module.exports = {
   devtool: 'source-map',
 
   entry: {
-    app: ['./client/index.js'],
+    app: [ './client/index.js' ],
   },
 
   output: {
-    path: path.join(__dirname, 'public'),
+    path: path.join(__dirname, 'build'),
     filename: '[name].js',
-    libraryTarget: 'umd',
     publicPath: '/',
   },
 
@@ -32,10 +32,9 @@ module.exports = {
       screw_ie8: true,
       compressor: { warnings: false },
     }),
-    new StaticSitePlugin({
-      src: 'app',
-      stylesheet: '/app.css',
-      favicon: '/favicon.ico',
+    new ReactStaticPlugin({
+      routes: './client/routes.js',
+      template: './template.js',
     }),
   ],
 
@@ -43,8 +42,8 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        loaders: ['babel'],
-        include: path.join(__dirname, 'client'),
+        loaders: [ 'babel' ],
+        exclude: path.join(__dirname, 'node_modules'),
       },
       {
         test: /\.css$/,
@@ -52,24 +51,26 @@ module.exports = {
       },
       {
         test: /\.styl/,
-        loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=2!autoprefixer!stylus'),
+        loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=2!postcss!stylus'),
       },
       {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loaders: ['url?limit=10000&mimetype=application/font-woff'],
+        loaders: [ 'url?limit=10000&mimetype=application/font-woff' ],
       },
       {
         test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loaders: ['file'],
+        loaders: [ 'file' ],
       },
       {
         test: /\.(png|jpg|gif|ico)$/,
-        loaders: ['file?name=[name].[ext]'],
+        loaders: [ 'file?name=[name].[ext]' ],
       },
     ],
   },
 
+  postcss: [autoprefixer({ browsers: ['last 2 versions'] })],
+
   stylus: {
-    use: [axis(), rupture()],
+    use: [ axis(), rupture() ],
   },
 };

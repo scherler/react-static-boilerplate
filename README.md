@@ -4,6 +4,8 @@
 
 A boilerplate for building static sites with [React][] and [React Router][]
 
+**UPDATE 2017:** The Webpack 2 version of this project is in beta, check out the [`webpack-2` branch](https://github.com/iansinnott/react-static-boilerplate/tree/webpack-2) if you'd like to use it.
+
 **Quick Start:**
 
 * `git clone https://github.com/iansinnott/react-static-boilerplate my-static-site`
@@ -15,18 +17,22 @@ A boilerplate for building static sites with [React][] and [React Router][]
 
 Now you're all set to deploy to your favorite hosting solution :beers:
 
-**NOTE:** It's important to run `npm run build` and **not** `npm build`. The latter will silently exit because it is a native NPM command. 
+To check your production build use pushstate-server
+`npm install pushstate-server -g`
+`pushstate-server build`
+
+**NOTE:** It's important to run `npm run build` and **not** `npm build`. The latter will silently exit because it is a native NPM command.
 
 ## Project Goals
 
 * A single source of truth: Your routes
-* Intuitive. Leverage existing font-end knowledge
+* Intuitive. Leverage existing front-end knowledge
 * Awesome developer experience
 * Flexible. No file structure or naming conventions required. Use whatever modules you want
 
 ## Dynamic Routes
 
-**Iportant Note:** This boilerplate does not yet support generating static sites for dynamic routes such as `post/:id`. That's the next major feature addition (see the [Roadmap below](#roadmap)) but it hasn't been implemented yet.
+**Important Note:** This boilerplate does not yet support generating static sites for dynamic routes such as `post/:id`. That's the next major feature addition (see the [Roadmap below](#roadmap)) but it hasn't been implemented yet.
 
 For more info see [this issue on the react-static-webpack-plugin repo](https://github.com/iansinnott/react-static-webpack-plugin/issues/2).
 
@@ -42,7 +48,7 @@ This boilerplate uses Stylus for page styling by default. It's pretty simple to 
 
 ### CSS Modules
 
-CSS Modules are provided as part of the css-loader itself. For more info check out the [CSS Loader docs][css-loader-modules]. If you haven't heard of CSS Modules check out [GitHub repo][CSS Modules]. Basically it lets you write styles local to any component or file. In my experience it makes styling much more pleasant and much less error prone. 
+CSS Modules are provided as part of the css-loader itself. For more info check out the [CSS Loader docs][css-loader-modules]. If you haven't heard of CSS Modules check out [GitHub repo][CSS Modules]. Basically it lets you write styles local to any component or file. In my experience it makes styling much more pleasant and much less error prone.
 
 Of course **if you don't want to use this feature you don't have to.**
 
@@ -150,6 +156,32 @@ For further reading on the primary tech used in this boilerplate see the links b
 - [ ] Leverage code splitting for efficient bundling and async module loading
 - [ ] Improved SVG tooling
 
+## Redux
+
+Redux is supported. Just be sure to tell the plugin where to find your store so that it can be passed through a `<Provider>` during the static rendering. You can edit this in `webpack.config.prod.js`
+
+```js
+// webpack.config.prod.js
+new ReactStaticPlugin({
+  routes: './client/routes.js',
+  template: './template.js',
+  reduxStore: './client/store.js', // <-- ADD THIS LINE
+})
+```
+
+```js
+// ./client/store.js
+import { createStore } from 'redux';
+
+import someReducer from '../reducers';
+
+const store = createStore(someReducer);
+
+export default store;
+```
+
+👉 [Go here for a full working Redux example.](https://github.com/iansinnott/react-static-webpack-plugin/blob/master/example/redux/webpack.config.prod.js#L45)
+
 ## Troubleshooting
 
 ### Babel Env
@@ -172,4 +204,3 @@ The `font-awesome-webpack` module does not seem to work with the approach of gen
 [React Router]: https://github.com/rackt/react-router
 [Redux]: https://github.com/rackt/redux
 [Docker Compose]: https://docs.docker.com/compose/
-
